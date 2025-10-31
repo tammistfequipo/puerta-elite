@@ -86,7 +86,7 @@ p{opacity:.92; margin:0 0 14px}
 /* Premio */
 .prize{
   position:absolute; top:50%; left:50%; transform:translate(-50%,-20%) scale(.8);
-  width:210px; padding:14px 16px; border-radius:14px;
+  width:230px; padding:14px 16px; border-radius:14px;
   background: linear-gradient(180deg, rgba(242,217,139,.18), rgba(242,217,139,.05));
   border:1px solid rgba(242,217,139,.45);
   text-align:center; opacity:0;
@@ -95,7 +95,7 @@ p{opacity:.92; margin:0 0 14px}
 .box.open .prize{ animation: reveal .7s ease-out forwards .55s; }
 @keyframes reveal{ 0%{opacity:0; transform:translate(-50%,-10%) scale(.9);} 100%{opacity:1; transform:translate(-50%,-50%) scale(1);} }
 
-.prize h2{ margin:6px 0 4px; font-size:22px; color:#f7f3d6 }
+.prize h2{ margin:6px 0 4px; font-size:20px; color:#f7f3d6; line-height:1.25 }
 .prize small{ opacity:.85 }
 
 /* Botón */
@@ -150,8 +150,8 @@ p{opacity:.92; margin:0 0 14px}
       <div class="glow"></div>
 
       <div class="prize" id="prizeCard">
-        <h2>🎁 Premio: 500 fichas</h2>
-        <small>Beneficio VIP vigente</small>
+        <h2 id="prizeTitle">🎁 Premio:</h2>
+        <small id="prizeNote">Beneficio VIP vigente</small>
       </div>
     </div>
 
@@ -172,15 +172,60 @@ p{opacity:.92; margin:0 0 14px}
 <div id="confetti"></div>
 
 <script>
-// Control diario (1 apertura por día)
-const todayKey=(()=>{const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`})();
-const openKey='vip_box_open_'+todayKey;
+// ---------- Utilidades de fecha ----------
+function todayStr(){
+  const d=new Date();
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`; // YYYY-MM-DD
+}
+
+// Hash simple tipo djb2 para alternar por día (determinístico)
+function hashStr(s){
+  let h=5381;
+  for(let i=0;i<s.length;i++){ h=((h<<5)+h)+s.charCodeAt(i); }
+  return Math.abs(h);
+}
+
+// ---------- Premio del día (intercalado) ----------
+// Alterna por día entre:
+//   A) 500 fichas
+//   B) 50% en tu próxima carga (NO EXTRAIBLE)
+function prizeOfTheDay(){
+  const h = hashStr(todayStr());
+  const isBonus = (h % 2) === 1; // alterna A/B día por día
+  if(isBonus){
+    return {
+      type: 'BONUS',
+      title: '🎁 Premio: 50% en tu próxima carga (NO EXTRAIBLE)',
+      note:  'Aplicable a tu próxima recarga · No extraíble',
+      whatsapp: 'Gané 50% en mi próxima carga (NO EXTRAIBLE) en la Caja Misteriosa VIP'
+    };
+  }else{
+    return {
+      type: 'FICHAS',
+      title: '🎁 Premio: 500 fichas',
+      note:  'Beneficio VIP vigente',
+      whatsapp: 'Gané 500 fichas en la Caja Misteriosa VIP'
+    };
+  }
+}
+
+const prize = prizeOfTheDay();
+
+// ---------- Control diario (1 apertura por día) ----------
+const openKey='vip_box_open_'+todayStr();
 
 const openBtn=document.getElementById('openBtn');
 const message=document.getElementById('message');
 const box=document.getElementById('box');
 const whatsappBtn=document.getElementById('whatsappBtn');
 const smoke=document.getElementById('smoke');
+const prizeTitle=document.getElementById('prizeTitle');
+const prizeNote=document.getElementById('prizeNote');
+
+// Cargamos el texto del premio del día en la tarjeta (se verá al abrir)
+prizeTitle.textContent = prize.title;
+prizeNote.textContent  = prize.note;
 
 if(localStorage.getItem(openKey)==='used'){
   openBtn.disabled=true;
@@ -199,12 +244,13 @@ openBtn.addEventListener('click',()=>{
   // Humo dorado
   launchSmoke(28);
 
-  // Mostrar premio + confetti + WhatsApp
+  // Mostrar premio + confetti + WhatsApp (texto dinámico según premio)
   setTimeout(()=>{
-    message.innerHTML="Premio otorgado: <strong>500 fichas</strong>";
+    message.innerHTML = `Premio otorgado: <strong>${prize.title.replace('🎁 Premio: ','')}</strong>`;
     launchConfetti(90);
     whatsappBtn.style.display="inline-block";
-    whatsappBtn.href="https://wa.me/541167907135?text=Hola!%20gan%C3%A9%20500%20fichas%20en%20la%20Caja%20Misteriosa%20VIP";
+    const waText = encodeURIComponent(`Hola! ${prize.whatsapp}`);
+    whatsappBtn.href = `https://wa.me/541167907135?text=${waText}`;
   },900);
 });
 
