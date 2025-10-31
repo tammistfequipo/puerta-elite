@@ -10,16 +10,26 @@
 :root{ --gold1:#d4af37; --gold2:#f6e27a; --gold3:#b8891d; --bg:#0a0a0a; }
 *{box-sizing:border-box}
 
+/* Fondo con tu imagen (aplicado en html para asegurar render) */
+html, body{ height:100%; }
+html{
+  background:url("f1ec4f7e-3b11-414c-bb1c-3db302c97c66.jpg") center/cover no-repeat #000;
+}
 body{
-  margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column;
-  background: url("https://images.unsplash.com/photo-1603481549238-2cbb3b4c4a1b?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
+  margin:0; min-height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column;
   color:#fff; font-family:'Poppins', system-ui, Arial; text-align:center; padding:22px;
   position: relative; overflow:hidden;
 }
-body::before{
-  content:""; position:absolute; inset:0;
-  background: rgba(0,0,0,0.65); backdrop-filter: blur(3px); z-index:-1;
+/* Capa oscura + blur por encima del fondo */
+body::after{
+  content:""; position:fixed; inset:0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(3px);
+  z-index:0;
 }
+
+/* Asegurar que el contenido quede por encima de la capa oscura */
+.header, .wrap, #confetti, #smoke { position:relative; z-index:1; }
 
 .header{max-width:720px}
 .logo{font-weight:700; letter-spacing:.12em; font-size:13px; color:#f2d98b; margin-bottom:6px; opacity:.9}
@@ -69,7 +79,7 @@ p{opacity:.92; margin:0 0 14px}
 .box.open .glow{ animation: popGlow .9s ease-out forwards .25s; }
 @keyframes popGlow{ to{ opacity:1; transform: translateY(-4px) scale(1); }}
 
-/* Open lid */
+/* Tapa abriendo */
 .box.open .lid{ animation: openLid .9s cubic-bezier(.2,.8,.2,1) forwards; }
 @keyframes openLid{ 0%{ transform: rotateX(0deg);} 60%{ transform:rotateX(-75deg);} 100%{ transform:rotateX(-62deg);}}
 
@@ -162,7 +172,7 @@ p{opacity:.92; margin:0 0 14px}
 <div id="confetti"></div>
 
 <script>
-// Control diario
+// Control diario (1 apertura por día)
 const todayKey=(()=>{const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`})();
 const openKey='vip_box_open_'+todayKey;
 
@@ -186,8 +196,8 @@ openBtn.addEventListener('click',()=>{
   // Abrir caja
   box.classList.add('open');
 
-  // Humo dorado (ráfaga)
-  launchSmoke(28); // cantidad de puffs
+  // Humo dorado
+  launchSmoke(28);
 
   // Mostrar premio + confetti + WhatsApp
   setTimeout(()=>{
@@ -211,7 +221,7 @@ function launchConfetti(amount){
   }
 }
 
-// Humo dorado (partículas suaves ascendentes)
+// Humo dorado (partículas ascendentes)
 function launchSmoke(amount){
   for(let i=0;i<amount;i++){
     const puff=document.createElement('div');
