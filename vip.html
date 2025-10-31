@@ -9,18 +9,25 @@
 <style>
 :root{ --gold1:#d4af37; --gold2:#f6e27a; --gold3:#b8891d; --bg:#0a0a0a; }
 *{box-sizing:border-box}
+
 body{
   margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column;
-  background: radial-gradient(1200px 600px at 50% 0%, rgba(212,175,55,.22), transparent 60%) var(--bg);
+  background: url("https://images.unsplash.com/photo-1603481549238-2cbb3b4c4a1b?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
   color:#fff; font-family:'Poppins', system-ui, Arial; text-align:center; padding:22px;
+  position: relative; overflow:hidden;
 }
+body::before{
+  content:""; position:absolute; inset:0;
+  background: rgba(0,0,0,0.65); backdrop-filter: blur(3px); z-index:-1;
+}
+
 .header{max-width:720px}
 .logo{font-weight:700; letter-spacing:.12em; font-size:13px; color:#f2d98b; margin-bottom:6px; opacity:.9}
 h1{font-size:26px; margin:4px 0 6px}
 p{opacity:.92; margin:0 0 14px}
 .wrap{display:flex; flex-direction:column; align-items:center; gap:16px; margin-top:10px}
 
-.stage{position:relative; width:320px; height:280px; display:grid; place-items:center}
+.stage{position:relative; width:320px; height:320px; display:grid; place-items:center}
 .spot{
   position:absolute; inset:-15% -20% auto -20%; height:220px; border-radius:50%;
   background: radial-gradient(closest-side, rgba(255,255,200,.22), transparent 75%);
@@ -50,8 +57,10 @@ p{opacity:.92; margin:0 0 14px}
   border-radius:10px; transform-origin: 50% 100%; transform: rotateX(0deg);
   box-shadow:0 12px 18px rgba(0,0,0,.55), inset 0 0 16px rgba(255,255,255,.25);
 }
-.ribbon{ position:absolute; inset:-42px -6px auto -6px; height:54px; border-radius:10px; background: repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 8px, rgba(255,255,255,.18) 8px 16px, rgba(0,0,0,.18) 16px 24px, transparent 24px 32px); mix-blend-mode: soft-light; pointer-events:none;}
+
+.ribbon{ position:absolute; inset:-42px -6px auto -6px; height:54px; border-radius:10px; background: repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 8px, rgba(255,255,255,.18) 8px 16px, rgba(0,0,0,.18) 16px 24px, transparent 24px 32px); mix-blend-mode: soft-light;}
 .shine{ position:absolute; inset:12px; border-radius:8px; background: linear-gradient(110deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,0) 30% 70%, rgba(255,255,255,.12) 100%);}
+
 .glow{
   position:absolute; top:-20px; width:180px; height:180px; border-radius:50%;
   background: radial-gradient(circle, rgba(255,215,0,.75) 0%, rgba(255,215,0,.08) 55%, transparent 70%);
@@ -75,6 +84,7 @@ p{opacity:.92; margin:0 0 14px}
 }
 .box.open .prize{ animation: reveal .7s ease-out forwards .55s; }
 @keyframes reveal{ 0%{opacity:0; transform:translate(-50%,-10%) scale(.9);} 100%{opacity:1; transform:translate(-50%,-50%) scale(1);} }
+
 .prize h2{ margin:6px 0 4px; font-size:22px; color:#f7f3d6 }
 .prize small{ opacity:.85 }
 
@@ -84,18 +94,35 @@ p{opacity:.92; margin:0 0 14px}
   border:none; border-radius:12px; padding:12px 20px; font-weight:800; cursor:pointer;
   box-shadow:0 0 18px rgba(212,175,55,.55); transition:transform .15s ease, box-shadow .2s ease;
 }
-.btn:hover{transform:translateY(-1px) scale(1.02); box-shadow:0 0 28px rgba(212,175,55,.85)}
+.btn:hover{ transform:translateY(-1px) scale(1.02); box-shadow:0 0 28px rgba(212,175,55,.85) }
 .btn:disabled{opacity:.55; cursor:not-allowed}
+
 .result{font-size:18px; font-weight:700; margin-top:10px; color:#b6ffbc}
 .footer{opacity:.55; font-size:12px; margin-top:18px}
 
 /* Confetti */
-#confetti { position: fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; overflow:hidden; }
+#confetti { position: fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none;}
 .confetti-piece{ position:absolute; width:8px; height:14px; background:var(--gold2); opacity:.9; animation:fall 2.4s linear forwards; border-radius:2px; }
 @keyframes fall{ 0%{transform:translateY(-10vh) rotate(0deg);} 100%{transform:translateY(100vh) rotate(360deg); opacity:0;} }
+
+/* HUMO DORADO */
+#smoke { position:absolute; left:50%; top:50%; width:0; height:0; transform:translate(-50%, -60%); pointer-events:none; }
+.smoke-puff{
+  position:absolute; width:14px; height:14px; border-radius:50%;
+  background: radial-gradient(circle, rgba(255,215,0,.55) 0%, rgba(255,215,0,.15) 40%, rgba(255,215,0,0) 70%);
+  filter: blur(1px);
+  animation: puff 2.2s ease-out forwards;
+  opacity:.8;
+}
+@keyframes puff{
+  0%{ transform:translate(0,0) scale(.6); opacity:.85; }
+  70%{ opacity:.45; }
+  100%{ transform:translate(var(--dx), var(--dy)) scale(1.8); opacity:0; }
+}
 </style>
 </head>
 <body>
+
 <div class="header">
   <div class="logo">SALA VIP · ACCESO CONCEDIDO</div>
   <h1>Caja Misteriosa VIP</h1>
@@ -111,11 +138,15 @@ p{opacity:.92; margin:0 0 14px}
       <div class="ribbon"></div>
       <div class="shine"></div>
       <div class="glow"></div>
+
       <div class="prize" id="prizeCard">
         <h2>🎁 Premio: 500 fichas</h2>
         <small>Beneficio VIP vigente</small>
       </div>
     </div>
+
+    <!-- Contenedor del humo -->
+    <div id="smoke"></div>
   </div>
 
   <button class="btn" id="openBtn">Abrir caja</button>
@@ -131,13 +162,15 @@ p{opacity:.92; margin:0 0 14px}
 <div id="confetti"></div>
 
 <script>
-const todayKey = (()=>{const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`})();
-const openKey = 'vip_box_open_'+todayKey;
-const params = new URLSearchParams(location.search);
-const openBtn = document.getElementById('openBtn');
-const message = document.getElementById('message');
-const box = document.getElementById('box');
-const whatsappBtn = document.getElementById('whatsappBtn');
+// Control diario
+const todayKey=(()=>{const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`})();
+const openKey='vip_box_open_'+todayKey;
+
+const openBtn=document.getElementById('openBtn');
+const message=document.getElementById('message');
+const box=document.getElementById('box');
+const whatsappBtn=document.getElementById('whatsappBtn');
+const smoke=document.getElementById('smoke');
 
 if(localStorage.getItem(openKey)==='used'){
   openBtn.disabled=true;
@@ -145,13 +178,18 @@ if(localStorage.getItem(openKey)==='used'){
 }
 
 openBtn.addEventListener('click',()=>{
-  if(openBtn.disabled) return;
+  if(openBtn.disabled)return;
 
   localStorage.setItem(openKey,'used');
   openBtn.disabled=true;
 
+  // Abrir caja
   box.classList.add('open');
 
+  // Humo dorado (ráfaga)
+  launchSmoke(28); // cantidad de puffs
+
+  // Mostrar premio + confetti + WhatsApp
   setTimeout(()=>{
     message.innerHTML="Premio otorgado: <strong>500 fichas</strong>";
     launchConfetti(90);
@@ -160,6 +198,7 @@ openBtn.addEventListener('click',()=>{
   },900);
 });
 
+// Confetti
 function launchConfetti(amount){
   const confetti=document.getElementById('confetti');
   for(let i=0;i<amount;i++){
@@ -169,6 +208,25 @@ function launchConfetti(amount){
     piece.style.background=Math.random()>.5?'gold':'#f6e27a';
     confetti.appendChild(piece);
     setTimeout(()=>piece.remove(),2400);
+  }
+}
+
+// Humo dorado (partículas suaves ascendentes)
+function launchSmoke(amount){
+  for(let i=0;i<amount;i++){
+    const puff=document.createElement('div');
+    puff.className='smoke-puff';
+    const angle=(Math.random()*Math.PI) - (Math.PI/2); // hacia arriba a ambos lados
+    const radius=60 + Math.random()*60; // distancia
+    const dx=Math.cos(angle)*radius;
+    const dy=(Math.sin(angle)*radius) - (60 + Math.random()*30); // subir más
+    puff.style.setProperty('--dx', dx+'px');
+    puff.style.setProperty('--dy', dy+'px');
+    puff.style.left=( -10 + Math.random()*20 )+'px';
+    puff.style.top=( -10 + Math.random()*20 )+'px';
+    puff.style.animationDuration=(1.6 + Math.random()*1.2)+'s';
+    smoke.appendChild(puff);
+    setTimeout(()=>puff.remove(), 2400);
   }
 }
 </script>
