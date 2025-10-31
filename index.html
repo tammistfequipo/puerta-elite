@@ -13,12 +13,21 @@
 *{box-sizing:border-box}
 body{
   margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
-  background: radial-gradient(1200px 600px at 50% 0%, rgba(212,175,55,.25), transparent 60%) #000;
+  background:url("https://images.unsplash.com/photo-1603481549238-2cbb3b4c4a1b?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
   color:#fff; font-family:'Poppins',system-ui,Arial; text-align:center; padding:24px;
+  position:relative; overflow:hidden;
 }
+body::before{
+  content:"";
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.78);
+  backdrop-filter:blur(4px);
+  z-index:-1;
+}
+
 .container{max-width:420px; width:100%}
-.logo{font-weight:700; letter-spacing:.12em; font-size:14px; color:#f2d98b; margin-bottom:6px; opacity:.9}
-h1{font-size:28px; margin:6px 0 6px}
+.logo{font-weight:700; letter-spacing:.12em; font-size:14px; color:#f2d98b; margin-bottom:6px;}
+h1{font-size:28px; margin:6px 0}
 p{opacity:.9; margin:0 0 18px}
 .door-wrap{
   margin:18px auto 22px; width:220px; height:360px; position:relative; filter: drop-shadow(0 0 24px rgba(212,175,55,.45));
@@ -30,108 +39,94 @@ p{opacity:.9; margin:0 0 18px}
   animation: glow 4s ease-in-out infinite alternate;
 }
 @keyframes glow{to{opacity:.35; transform:translateY(-6px) scale(1.02)}}
+
 .door{
   width:100%; height:100%;
-  background: linear-gradient(180deg, #b8891d 0%, #d4af37 48%, #8c6a1b 100%);
-  border:4px solid #f2d98b; border-radius:10px; position:relative; overflow:hidden;
+  background: linear-gradient(180deg, #b8891d, #d4af37, #8c6a1b);
+  border:4px solid #f2d98b; border-radius:10px; position:relative;
 }
 .door:after{
-  content:""; position:absolute; inset:10px 10px auto 10px; height:14px; border-radius:8px;
+  content:""; position:absolute; inset:12px; height:16px; border-radius:8px;
   background: linear-gradient(90deg, rgba(255,255,255,.25), rgba(255,255,255,.02));
 }
 .knob{
-  position:absolute; right:22px; top:50%; width:16px; height:16px; border-radius:50%;
-  transform:translateY(-50%);
-  background: radial-gradient(circle at 30% 30%, #fff, #edd38a 30%, #b8891d 70%);
-  box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  position:absolute; right:22px; top:50%; width:16px; height:16px;
+  border-radius:50%; transform:translateY(-50%);
+  background: radial-gradient(circle,#fff,#edd38a 30%,#b8891d 70%);
 }
 
 .btn{
-  background: linear-gradient(90deg, var(--gold1), var(--gold2));
-  color:#111; border:none; border-radius:12px; padding:12px 22px; font-weight:700; cursor:pointer;
-  box-shadow:0 0 18px rgba(212,175,55,.55); transition:transform .15s ease, box-shadow .2s ease;
+  background: linear-gradient(90deg, var(--gold1), var(--gold2)); border:none;
+  padding:12px 22px; border-radius:12px; font-weight:700; cursor:pointer; color:#111;
+  box-shadow:0 0 18px rgba(212,175,55,.55); transition:.2s;
 }
-.btn:hover{transform:translateY(-1px) scale(1.02); box-shadow:0 0 28px rgba(212,175,55,.85)}
-.btn:disabled{opacity:.5; cursor:not-allowed}
+.btn:hover{transform:scale(1.03); box-shadow:0 0 28px rgba(212,175,55,.9)}
+.btn:disabled{opacity:.5}
 
 .keys{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px}
 .key{
   padding:12px 8px; border:1px solid rgba(242,217,139,.25); border-radius:10px; cursor:pointer;
-  background: linear-gradient(180deg, rgba(242,217,139,.12), rgba(242,217,139,.03));
-  transition:transform .12s ease, border-color .2s ease;
+  background: rgba(255,255,255,.04); color:#f2d98b;
 }
-.key:hover{transform:translateY(-2px); border-color:rgba(242,217,139,.6)}
 .note{font-size:12px; opacity:.7; margin-top:10px}
 .msg{margin-top:12px; min-height:22px}
-.success{color:#b6ffbc}
-.error{color:#ffb6b6}
-.footer{opacity:.55; font-size:12px; margin-top:24px}
+.hidden{display:none}
 </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo">SALA ELITE</div>
-    <h1>Acceso Elite</h1>
-    <p>Solo quienes la suerte reconoce pueden entrar.<br/>¿Podés abrir la puerta?</p>
+<div class="container">
+  <div class="logo">SALA ELITE</div>
+  <h1>Acceso Elite</h1>
+  <p>Solo quienes la suerte reconoce pueden entrar.<br>¿Podés abrir la puerta?</p>
 
-    <div class="door-wrap">
-      <div class="spot"></div>
-      <div class="door"><div class="knob"></div></div>
-    </div>
-
-    <button class="btn" id="tryBtn">Intentar abrir</button>
-
-    <div id="challenge" class="hidden">
-      <p style="margin:16px 0 8px">Elegí la llave correcta para entrar.</p>
-      <div class="keys">
-        <button class="key" data-k="0">Llave I</button>
-        <button class="key" data-k="1">Llave II</button>
-        <button class="key" data-k="2">Llave III</button>
-      </div>
-      <div class="note">Tenés un solo intento hoy.</div>
-    </div>
-
-    <div id="msg" class="msg"></div>
-    <div class="footer">Diseño Casino Elite · Oro & Mármol</div>
+  <div class="door-wrap">
+    <div class="spot"></div>
+    <div class="door"><div class="knob"></div></div>
   </div>
 
+  <button class="btn" id="tryBtn">Intentar abrir</button>
+
+  <div id="challenge" class="hidden">
+    <p style="margin:16px 0 8px">Elegí la llave correcta para entrar.</p>
+    <div class="keys">
+      <button class="key" data-k="0">Llave I</button>
+      <button class="key" data-k="1">Llave II</button>
+      <button class="key" data-k="2">Llave III</button>
+    </div>
+    <div class="note">Tenés un solo intento hoy.</div>
+  </div>
+
+  <div id="msg" class="msg"></div>
+</div>
+
 <script>
-const tryBtn = document.getElementById('tryBtn');
-const challenge = document.getElementById('challenge');
-const msg = document.getElementById('msg');
+const tryBtn=document.getElementById('tryBtn');
+const challenge=document.getElementById('challenge');
+const msg=document.getElementById('msg');
 
-const todayKey = (() => {
-  const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-})();
-const storageKey = 'elite_attempt_'+todayKey;
+const todayKey=(()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`})();
+const storageKey='elite_attempt_'+todayKey;
 
-const correct = Math.floor(Math.random()*3); // llave correcta del día (simple)
-
+const correct=Math.floor(Math.random()*3);
 if(localStorage.getItem(storageKey)==='used'){
-  tryBtn.disabled = true;
-  tryBtn.textContent = 'Intento de hoy usado';
+  tryBtn.disabled=true; tryBtn.textContent='Ya usaste tu intento hoy';
 }
 
-tryBtn.addEventListener('click', ()=>{
-  tryBtn.classList.add('hidden');
-  challenge.classList.remove('hidden');
-});
+tryBtn.onclick=()=>{tryBtn.classList.add('hidden');challenge.classList.remove('hidden');}
 
-document.querySelectorAll('.key').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    if(localStorage.getItem(storageKey)==='used'){ return; }
-    const pick = parseInt(btn.dataset.k,10);
-    localStorage.setItem(storageKey, 'used');
-    if(pick === correct){
-      msg.innerHTML = '<span class="success">Acceso concedido. Bienvenido a la Sala VIP.</span>';
-      // “Pase” simple por query; sin backend (MVP)
-      setTimeout(()=>{ window.location.href = 'vip.html?pass=ok'; }, 900);
+document.querySelectorAll('.key').forEach(b=>{
+  b.onclick=()=>{
+    if(localStorage.getItem(storageKey)==='used')return;
+    localStorage.setItem(storageKey,'used');
+    const pick=parseInt(b.dataset.k,10);
+    if(pick===correct){
+      msg.innerHTML='<span style="color:#b6ffbc">Acceso concedido ✅</span>';
+      setTimeout(()=>location.href='vip.html?pass=ok',900);
     }else{
-      msg.innerHTML = '<span class="error">La puerta no te reconoce aún. Intentá mañana.</span>';
-      tryBtn.disabled = true;
-      tryBtn.textContent = 'Intento de hoy usado';
+      msg.innerHTML='<span style="color:#ffb6b6">La puerta no te reconoció. Volvé mañana.</span>';
+      tryBtn.disabled=true;
     }
-  });
+  }
 });
 </script>
 </body>
