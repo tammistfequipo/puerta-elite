@@ -1,1 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sala VIP · Ruleta Secreta</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --gold1:#d4af37; --gold2:#f6e27a; --gold3:#b8891d; }
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column;
+  background: radial-gradient(1200px 600px at 50% 0%, rgba(212,175,55,.22), transparent 60%) #0a0a0a;
+  color:#fff; font-family:'Poppins',system-ui,Arial; text-align:center; padding:22px;
+}
+.header{max-width:720px}
+.logo{font-weight:700; letter-spacing:.12em; font-size:13px; color:#f2d98b; margin-bottom:6px; opacity:.9}
+h1{font-size:26px; margin:4px 0 6px}
+p{opacity:.92; margin:0 0 14px}
+.wrap{display:flex; flex-direction:column; align-items:center; gap:18px; margin-top:10px}
+.wheel-area{position:relative; width:320px; height:320px}
+.wheel{
+  width:100%; height:100%; border-radius:50%;
+  border:6px solid #f2d98b;
+  background:
+    conic-gradient(
+      #1f1a0f 0 45deg, #3a2e15 45deg 90deg,
+      #1f1a0f 90deg 135deg, #3a2e15 135deg 180deg,
+      #1f1a0f 180deg 225deg, #3a2e15 225deg 270deg,
+      #1f1a0f 270deg 315deg, #3a2e15 315deg 360deg
+    );
+  box-shadow:0 0 40px rgba(212,175,55,.55), inset 0 0 40px rgba(0,0,0,.6);
+  position:relative; display:grid; place-items:center;
+  transition: transform 4.2s cubic-bezier(.17,.67,.18,1.02);
+}
+.pin{
+  position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+  width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:18px solid #f2d98b;
+  filter: drop-shadow(0 0 6px rgba(242,217,139,.8));
+}
+.center{
+  position:absolute; width:88px; height:88px; border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, #fff, #edd38a 35%, #b8891d 75%);
+  border:4px solid #f2d98b; display:grid; place-items:center; font-weight:800; color:#111;
+  box-shadow:0 0 18px rgba(242,217,139,.7);
+}
+.center small{display:block; font-size:10px; letter-spacing:.1em}
+.labels{
+  position:absolute; inset:0; pointer-events:none; display:flex; align-items:center; justify-content:center;
+}
+.label{
+  position:absolute; width:50%; left:50%; transform-origin:0% 50%;
+  text-align:right; padding-right:14px; font-size:13px; font-weight:600; color:#f7f3d6;
+  text-shadow:0 1px 2px rgba(0,0,0,.8);
+}
+.controls{display:flex; gap:12px; flex-wrap:wrap; justify-content:center}
+.btn{
+  background: linear-gradient(90deg, var(--gold1), var(--gold2)); color:#111;
+  border:none; border-radius:12px; padding:12px 20px; font-weight:800; cursor:pointer;
+  box-shadow:0 0 18px rgba(212,175,55,.55); transition:transform .15s ease, box-shadow .2s ease;
+}
+.btn:hover{transform:translateY(-1px) scale(1.02); box-shadow:0 0 28px rgba(212,175,55,.85)}
+.btn:disabled{opacity:.55; cursor:not-allowed}
 
+.card{
+  background: linear-gradient(180deg, rgba(242,217,139,.14), rgba(242,217,139,.04));
+  border:1px solid rgba(242,217,139,.25);
+  border-radius:14px; padding:12px 14px; max-width:680px; margin-top:8px; font-size:13px; opacity:.95
+}
+.result{font-size:18px; font-weight:700; margin-top:10px; color:#b6ffbc}
+.error{color:#ffb6b6}
+.hidden{display:none}
+.footer{opacity:.55; font-size:12px; margin-top:18px}
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">SALA VIP · ACCESO CONCEDIDO</div>
+    <h1>Ruleta VIP Secreta</h1>
+    <p>Un giro por día. Premios especiales. Acceso limitado.</p>
+  </div>
+
+  <div class="wrap">
+    <div class="wheel-area">
+      <div class="pin"></div>
+      <div id="wheel" class="wheel">
+        <div class="labels" id="labels"></div>
+        <div class="center"><small>VIP</small>RUEDA</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="spinBtn">Girar ahora</button>
+      <button class="btn" id="rulesBtn">Reglas</button>
+    </div>
+
+    <div id="info" class="card">
+      Premios en rueda: 500 fichas, 200 fichas, 100 fichas, Giro extra, 10% bono, 0, Cashback 5%, Mystery.
+    </div>
+
+    <div id="message" class="result"></div>
+    <div class="footer">Diseño Casino Elite · Oro & Mármol</div>
+  </div>
+
+<script>
+// --- Configuración de premios (visual) ---
+const prizes = [
+  "200 fichas",
+  "Giro extra",
+  "500 fichas",      // <— ESTA ES LA QUE DEBE SALIR SIEMPRE
+  "10% bono",
+  "100 fichas",
+  "Mystery",
+  "0",
+  "Cashback 5%"
+];
+// Index del premio real forzado (siempre 500 fichas)
+const forcedIndex = prizes.indexOf("500 fichas");
+
+// Dibuja labels alrededor de la rueda
+const labels = document.getElementById('labels');
+const slices = prizes.length;
+const sliceAngle = 360 / slices;
+for (let i=0;i<slices;i++){
+  const el = document.createElement('div');
+  el.className = 'label';
+  const angle = (i * sliceAngle) + sliceAngle/2; // centro de cada slice
+  el.style.transform = `rotate(${angle}deg) translateX(-6px)`;
+  el.innerText = prizes[i];
+  labels.appendChild(el);
+}
+
+const wheel = document.getElementById('wheel');
+const spinBtn = document.getElementById('spinBtn');
+const rulesBtn = document.getElementById('rulesBtn');
+const message = document.getElementById('message');
+
+// Control: 1 giro por día
+const todayKey = (() => {
+  const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+})();
+const spinKey = 'vip_spin_'+todayKey;
+if(localStorage.getItem(spinKey)==='used'){
+  spinBtn.disabled = true;
+  message.innerHTML = "El giro de hoy ya fue utilizado. Volvé mañana.";
+}
+
+// Seguridad mínima de acceso (MVP sin backend)
+const params = new URLSearchParams(location.search);
+if(params.get('pass') !== 'ok'){
+  // Si alguien entra directo sin “puerta”: lo dejamos, pero podrías redirigir:
+  // location.href = 'index.html';
+}
+
+// Spin “siempre gana 500 fichas”
+let spinning = false;
+spinBtn.addEventListener('click', ()=>{
+  if(spinning || spinBtn.disabled) return;
+  spinning = true;
+  spinBtn.disabled = true;
+
+  // Marca uso del día
+  localStorage.setItem(spinKey,'used');
+
+  // Calculamos el ángulo objetivo para caer en forcedIndex
+  // Elegimos varias vueltas + centro del slice forzado:
+  const baseTurns = 5; // vueltas completas
+  const targetSliceCenter = (forcedIndex * sliceAngle) + sliceAngle/2;
+  // Pequeño aleatorio dentro del slice para naturalidad (± 6 grados)
+  const jitter = (Math.random() * 12) - 6;
+  const finalAngle = (baseTurns * 360) + (360 - (targetSliceCenter + jitter));
+
+  wheel.style.transform = `rotate(${finalAngle}deg)`;
+
+  // Al terminar animación (4.2s definidos en CSS)
+  setTimeout(()=>{
+    message.innerHTML = "Premio otorgado: <strong>500 fichas</strong>";
+    // Si quisieras disparar confetti o mostrar modal, acá.
+    spinning = false;
+  }, 4300);
+});
+
+rulesBtn.addEventListener('click', ()=>{
+  alert(
+`Reglas de la Ruleta VIP:
+• Un giro por día por acceso.
+• Los premios visuales son variados, el beneficio VIP vigente es de 500 fichas.
+• Accesos limitados. Reservado a Sala Elite.`
+  );
+});
+</script>
+</body>
+</html>
