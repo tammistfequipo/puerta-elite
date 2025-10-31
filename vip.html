@@ -3,43 +3,93 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sala VIP · Ruleta Secreta</title>
+<title>Sala VIP · Caja Misteriosa</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{ --gold1:#d4af37; --gold2:#f6e27a; --gold3:#b8891d; }
+:root{ --gold1:#d4af37; --gold2:#f6e27a; --gold3:#b8891d; --bg:#0a0a0a; }
 *{box-sizing:border-box}
 body{
   margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column;
-  background: radial-gradient(1200px 600px at 50% 0%, rgba(212,175,55,.22), transparent 60%) #0a0a0a;
-  color:#fff; font-family:'Poppins',system-ui,Arial; text-align:center; padding:22px;
+  background: radial-gradient(1200px 600px at 50% 0%, rgba(212,175,55,.22), transparent 60%) var(--bg);
+  color:#fff; font-family:'Poppins', system-ui, Arial; text-align:center; padding:22px;
 }
 .header{max-width:720px}
 .logo{font-weight:700; letter-spacing:.12em; font-size:13px; color:#f2d98b; margin-bottom:6px; opacity:.9}
 h1{font-size:26px; margin:4px 0 6px}
 p{opacity:.92; margin:0 0 14px}
-.wrap{display:flex; flex-direction:column; align-items:center; gap:18px; margin-top:10px}
-.wheel-area{position:relative; width:320px; height:320px}
-.wheel{
-  width:100%; height:100%; border-radius:50%;
-  border:6px solid #f2d98b;
-  background:conic-gradient(#1f1a0f 0 45deg,#3a2e15 45deg 90deg,#1f1a0f 90deg 135deg,#3a2e15 135deg 180deg,#1f1a0f 180deg 225deg,#3a2e15 225deg 270deg,#1f1a0f 270deg 315deg,#3a2e15 315deg 360deg);
-  box-shadow:0 0 40px rgba(212,175,55,.55), inset 0 0 40px rgba(0,0,0,.6);
-  position:relative; display:grid; place-items:center;
-  transition: transform 4.2s cubic-bezier(.17,.67,.18,1.02);
+.wrap{display:flex; flex-direction:column; align-items:center; gap:16px; margin-top:10px}
+
+.stage{position:relative; width:320px; height:280px; display:grid; place-items:center}
+.spot{
+  position:absolute; inset:-15% -20% auto -20%; height:220px; border-radius:50%;
+  background: radial-gradient(closest-side, rgba(255,255,200,.22), transparent 75%);
+  filter: blur(1px); animation: aura 4s ease-in-out infinite alternate;
 }
-.pin{
-  position:absolute; top:-10px; left:50%; transform:translateX(-50%);
-  width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:18px solid #f2d98b;
+@keyframes aura { to{ opacity:.35; transform: translateY(-6px) scale(1.03);} }
+
+/* Caja */
+.box{
+  position:relative; width:220px; height:160px;
+  background: linear-gradient(180deg, #3a2e15 0%, #1f1a0f 100%);
+  border:3px solid rgba(242,217,139,.55);
+  border-radius:12px; box-shadow:0 0 26px rgba(212,175,55,.35), inset 0 0 30px rgba(0,0,0,.6);
+  transform-style: preserve-3d;
 }
-.center{
-  position:absolute; width:88px; height:88px; border-radius:50%;
-  background: radial-gradient(circle at 30% 30%, #fff, #edd38a 35%, #b8891d 75%);
-  border:4px solid #f2d98b; display:grid; place-items:center; font-weight:800; color:#111;
+.lid{
+  position:absolute; left:-6px; right:-6px; top:-42px; height:54px;
+  background: linear-gradient(180deg, #b8891d 0%, #d4af37 55%, #8c6a1b 100%);
+  border:3px solid rgba(242,217,139,.8);
+  border-radius:10px; transform-origin: 50% 100%; transform: rotateX(0deg);
+  box-shadow:0 12px 18px rgba(0,0,0,.55), inset 0 0 16px rgba(255,255,255,.25);
 }
-.center small{display:block; font-size:10px; letter-spacing:.1em}
-.labels{position:absolute; inset:0; pointer-events:none; display:flex; align-items:center; justify-content:center}
-.label{position:absolute; width:50%; left:50%; transform-origin:0% 50%; text-align:right; padding-right:14px; font-size:13px; font-weight:600; color:#f7f3d6}
+.ribbon{
+  position:absolute; inset:-42px -6px auto -6px; height:54px; border-radius:10px;
+  background: repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 8px, rgba(255,255,255,.18) 8px 16px, rgba(0,0,0,.18) 16px 24px, transparent 24px 32px);
+  mix-blend-mode: soft-light; pointer-events:none;
+}
+.shine{
+  position:absolute; inset:12px 12px 12px 12px; border-radius:8px;
+  background: linear-gradient(110deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,0) 30% 70%, rgba(255,255,255,.12) 100%);
+  filter: blur(.5px);
+}
+
+/* Estado abierto */
+.box.open .lid{ animation: openLid .9s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes openLid{
+  0%{ transform: rotateX(0deg); }
+  60%{ transform: rotateX(-75deg); }
+  100%{ transform: rotateX(-62deg); }
+}
+
+/* Glow al abrir */
+.glow{
+  position:absolute; top:-20px; width:180px; height:180px; border-radius:50%;
+  background: radial-gradient(circle, rgba(255,215,0,.75) 0%, rgba(255,215,0,.08) 55%, transparent 70%);
+  opacity:0; transform: translateY(18px) scale(.85);
+}
+.box.open .glow{ animation: popGlow .9s ease-out forwards .25s; }
+@keyframes popGlow{
+  to{ opacity:1; transform: translateY(-4px) scale(1); }
+}
+
+/* Tarjeta premio */
+.prize{
+  position:absolute; top:50%; left:50%; transform: translate(-50%,-20%) scale(.8);
+  width:210px; padding:14px 16px; border-radius:14px;
+  background: linear-gradient(180deg, rgba(242,217,139,.18), rgba(242,217,139,.05));
+  border:1px solid rgba(242,217,139,.45); text-align:center; opacity:0;
+  box-shadow: 0 0 24px rgba(212,175,55,.45);
+}
+.box.open .prize{ animation: reveal .7s ease-out forwards .55s; }
+@keyframes reveal{
+  0%{ opacity:0; transform: translate(-50%,-10%) scale(.9);}
+  100%{ opacity:1; transform: translate(-50%,-50%) scale(1);}
+}
+.prize h2{ margin:6px 0 4px; font-size:22px; color:#f7f3d6 }
+.prize small{ opacity:.85 }
+
+/* Botones / tarjetas */
 .controls{display:flex; gap:12px; flex-wrap:wrap; justify-content:center}
 .btn{
   background: linear-gradient(90deg, var(--gold1), var(--gold2)); color:#111;
@@ -55,139 +105,108 @@ p{opacity:.92; margin:0 0 14px}
 }
 .result{font-size:18px; font-weight:700; margin-top:10px; color:#b6ffbc}
 .footer{opacity:.55; font-size:12px; margin-top:18px}
-.win-glow{
-  box-shadow:0 0 40px rgba(255,215,0,.9) inset, 0 0 20px rgba(255,215,0,.9)!important;
-}
 
 /* Confetti */
-#confetti {
-  position: fixed;
-  top:0; left:0; width:100vw; height:100vh;
-  pointer-events:none; overflow:hidden;
-}
+#confetti { position: fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; overflow:hidden; }
 .confetti-piece {
-  position: absolute;
-  width: 8px; height: 14px;
-  background: var(--gold2); opacity:.9;
-  animation: fall 2.4s linear forwards;
-  border-radius: 2px;
+  position: absolute; width: 8px; height: 14px; background: var(--gold2); opacity:.9;
+  animation: fall 2.4s linear forwards; border-radius: 2px;
 }
-@keyframes fall {
-  0% { transform:translateY(-10vh) rotate(0deg); }
-  100%{ transform:translateY(100vh) rotate(360deg); opacity:0; }
-}
+@keyframes fall { 0%{ transform:translateY(-10vh) rotate(0deg);} 100%{ transform:translateY(100vh) rotate(360deg); opacity:0;} }
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="logo">SALA VIP · ACCESO CONCEDIDO</div>
-  <h1>Ruleta VIP Secreta</h1>
-  <p>Un giro por día. Acceso exclusivo.</p>
-</div>
+  <div class="header">
+    <div class="logo">SALA VIP · ACCESO CONCEDIDO</div>
+    <h1>Caja Misteriosa VIP</h1>
+    <p>Un intento por día. Acceso exclusivo.</p>
+  </div>
 
-<div class="wrap">
-  <div class="wheel-area">
-    <div class="pin"></div>
-    <div id="wheel" class="wheel">
-      <div class="labels" id="labels"></div>
-      <div class="center"><small>VIP</small>RUEDA</div>
+  <div class="wrap">
+    <div class="stage">
+      <div class="spot"></div>
+
+      <div id="box" class="box">
+        <div class="lid"></div>
+        <div class="ribbon"></div>
+        <div class="shine"></div>
+        <div class="glow"></div>
+
+        <div class="prize" id="prizeCard">
+          <h2>🎁 Premio: 500 fichas</h2>
+          <small>Beneficio VIP vigente</small>
+        </div>
+      </div>
     </div>
+
+    <div class="controls">
+      <button class="btn" id="openBtn">Abrir caja</button>
+      <button class="btn" id="rulesBtn">Reglas</button>
+    </div>
+
+    <div id="message" class="result"></div>
+
+    <a id="whatsappBtn" href="#" class="btn" style="display:none; margin-top:10px;">
+      Validar premio por WhatsApp
+    </a>
+
+    <div class="footer">Diseño Casino Elite · Oro & Mármol</div>
   </div>
 
-  <div class="controls">
-    <button class="btn" id="spinBtn">Girar ahora</button>
-    <button class="btn" id="rulesBtn">Reglas</button>
-  </div>
-
-  <div id="info" class="card">Premios: 500 fichas, 200 fichas, 100 fichas, 10% bono, Giro extra, Cashback 5%, Mystery, 0</div>
-  <div id="message" class="result"></div>
-
-  <a id="whatsappBtn" href="#" class="btn" style="display:none; margin-top:10px;">
-    Validar premio por WhatsApp
-  </a>
-
-  <div class="footer">Diseño Casino Elite</div>
-</div>
-
-<div id="confetti"></div>
+  <div id="confetti"></div>
 
 <script>
-// Premios visuales
-const prizes = [
-  "200 fichas","Giro extra","500 fichas","10% bono",
-  "100 fichas","Mystery","0","Cashback 5%"
-];
-const forcedIndex = prizes.indexOf("500 fichas");
-const labels = document.getElementById('labels');
-const slices = prizes.length;
-const sliceAngle = 360 / slices;
+// Control: 1 apertura por día
+const todayKey = (() => { const d=new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}` })();
+const openKey = 'vip_box_open_' + todayKey;
 
-// Dibuja textos
-for (let i=0;i<slices;i++){
-  const el=document.createElement('div');
-  el.className='label';
-  const angle=(i*sliceAngle)+(sliceAngle/2);
-  el.style.transform=`rotate(${angle}deg) translateX(-6px)`;
-  el.innerText=prizes[i];
-  labels.appendChild(el);
+const params = new URLSearchParams(location.search);
+if (params.get('pass') !== 'ok') { /* Si querés, redirigí a index.html */ }
+
+const openBtn = document.getElementById('openBtn');
+const rulesBtn = document.getElementById('rulesBtn');
+const message = document.getElementById('message');
+const box = document.getElementById('box');
+const prizeCard = document.getElementById('prizeCard');
+const whatsappBtn = document.getElementById('whatsappBtn');
+
+if (localStorage.getItem(openKey) === 'used') {
+  openBtn.disabled = true;
+  message.textContent = "Intento usado hoy. Volvé mañana.";
 }
 
-const wheel=document.getElementById('wheel');
-const spinBtn=document.getElementById('spinBtn');
-const rulesBtn=document.getElementById('rulesBtn');
-const message=document.getElementById('message');
-const whatsappBtn=document.getElementById('whatsappBtn');
+openBtn.addEventListener('click', () => {
+  if (openBtn.disabled) return;
 
-// 1 giro por día
-const todayKey=(()=>{const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`})();
-const spinKey='vip_spin_'+todayKey;
-if(localStorage.getItem(spinKey)==='used'){
-  spinBtn.disabled=true;
-  message.innerHTML="Giro usado hoy. Volvé mañana.";
-}
+  // Marcar uso del día
+  localStorage.setItem(openKey, 'used');
+  openBtn.disabled = true;
 
-// Minimizar acceso directo
-const params=new URLSearchParams(location.search);
-if(params.get('pass')!=='ok'){ }
+  // Animación abrir caja
+  box.classList.add('open');
 
-// Spin
-let spinning=false, currentRotation=0;
-spinBtn.addEventListener('click',()=>{
-  if(spinning||spinBtn.disabled)return;
-  spinning=true; spinBtn.disabled=true;
-  localStorage.setItem(spinKey,'used');
-
-  const targetCenter=(forcedIndex*sliceAngle)+(sliceAngle/2);
-  const baseTurns=6;
-  const currentMod=((currentRotation%360)+360)%360;
-  const needed=(360-targetCenter-currentMod+360)%360;
-  const delta=(baseTurns*360)+needed;
-
-  currentRotation+=delta;
-  wheel.style.transform=`rotate(${currentRotation}deg)`;
-
-  setTimeout(()=>{
-    message.innerHTML="Premio otorgado: <strong>500 fichas</strong>";
-    document.querySelector('.center').classList.add("win-glow");
+  // Mostrar premio + confetti + botón WhatsApp
+  setTimeout(() => {
+    message.innerHTML = "Premio otorgado: <strong>500 fichas</strong>";
     launchConfetti(80);
-    whatsappBtn.style.display="inline-block";
-    whatsappBtn.href="https://wa.me/541167907135?text=Hola!%20acabo%20de%20ganar%20500%20fichas%20en%20la%20Sala%20VIP%20🎰";
-    spinning=false;
-  },4300);
+    whatsappBtn.style.display = "inline-block";
+    // N°: 11 6790 7135 (AR). Usamos 54 11...
+    whatsappBtn.href = "https://wa.me/541167907135?text=Hola!%20gan%C3%A9%20500%20fichas%20en%20la%20Caja%20Misteriosa%20VIP";
+  }, 900);
 });
 
-rulesBtn.addEventListener('click',()=>{
-  alert("Reglas:\n• Un giro por día\n• Premio VIP fijo: 500 fichas\n• Acceso limitado");
+rulesBtn.addEventListener('click', () => {
+  alert("Reglas:\n• Un intento por día\n• Premio VIP fijo: 500 fichas\n• Acceso limitado");
 });
 
-// Confetti
+// Confetti simple (sin sonido)
 function launchConfetti(amount){
-  const confetti=document.getElementById('confetti');
+  const confetti = document.getElementById('confetti');
   for(let i=0;i<amount;i++){
     const piece=document.createElement('div');
     piece.classList.add('confetti-piece');
-    piece.style.left=Math.random()*100+'vw';
-    piece.style.background=Math.random()>.5?'gold':'#f6e27a';
+    piece.style.left = Math.random()*100 + 'vw';
+    piece.style.background = Math.random()>.5 ? 'gold' : '#f6e27a';
     confetti.appendChild(piece);
     setTimeout(()=>piece.remove(),2400);
   }
